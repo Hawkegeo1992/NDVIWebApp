@@ -1,22 +1,103 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>NDVI WebApp 🌍</title>
+  <meta charset="UTF-8">
+  <title>NDVI Weekly Viewer</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #2e7d32;
+      margin-bottom: 1rem;
+    }
+    select, button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      margin: 0.5rem 0;
+      width: 100%;
+    }
+    pre {
+      background: #eee;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      margin-top: 1rem;
+      overflow-x: auto;
+    }
+  </style>
 </head>
 <body>
-  <h2>🛰 Vegetation Index Viewer</h2>
-  <button onclick="fetchNDVI()">🔍 Load NDVI</button>
-  <pre id="output"></pre>
+  <div class="container">
+    <h2>🛰 NDVI Weekly Viewer – Ahwaz</h2>
+    <label for="year">Year:</label>
+    <select id="year"></select>
+
+    <label for="month">Month:</label>
+    <select id="month"></select>
+
+    <label for="week">Week:</label>
+    <select id="week">
+      <option value="1">Week 1</option>
+      <option value="2">Week 2</option>
+      <option value="3">Week 3</option>
+      <option value="4">Week 4</option>
+    </select>
+
+    <label for="index">Index:</label>
+    <select id="index">
+      <option>NDVI</option>
+      <option>SAVI</option>
+      <option>MNDWI</option>
+      <option>Moisture Index</option>
+      <option>GEMI</option>
+      <option>RGB</option>
+    </select>
+
+    <button onclick="loadIndex()">🔍 Load Image</button>
+    <pre id="output">Output will appear here after loading data...</pre>
+  </div>
 
   <script>
-    async function fetchNDVI() {
+    // Populate years/months
+    const yearSelect = document.getElementById('year');
+    const monthSelect = document.getElementById('month');
+    for (let y = 2014; y <= 2025; y++) {
+      yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
+    }
+    for (let m = 1; m <= 12; m++) {
+      const mm = m.toString().padStart(2, '0');
+      monthSelect.innerHTML += `<option value="${mm}">${mm}</option>`;
+    }
+
+    async function loadIndex() {
+      const year = document.getElementById('year').value;
+      const month = document.getElementById('month').value;
+      const week = document.getElementById('week').value;
+      const index = document.getElementById('index').value;
+
+      document.getElementById('output').textContent = '⏳ Fetching from API...';
+
       try {
-        const res = await fetch('/.netlify/functions/runGEE');
+        const res = await fetch('/.netlify/functions/runGEE', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({year, month, week, index})
+        });
         const data = await res.json();
         document.getElementById('output').textContent = JSON.stringify(data, null, 2);
       } catch (err) {
-        document.getElementById('output').textContent = 'Error loading NDVI data.';
+        document.getElementById('output').textContent = '❌ Error loading data: ' + err.message;
       }
     }
   </script>
