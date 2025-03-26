@@ -1,0 +1,7 @@
+{
+  "name": "ndvi-webapp",
+  "version": "1.0.0",
+  "dependencies": {
+    "@google/earthengine": "^0.1.265"
+  }
+}

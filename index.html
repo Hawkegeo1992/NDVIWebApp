@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>NDVI WebApp 🌍</title>
+</head>
+<body>
+  <h2>🛰 Vegetation Index Viewer</h2>
+  <button onclick="fetchNDVI()">🔍 Load NDVI</button>
+  <pre id="output"></pre>
+
+  <script>
+    async function fetchNDVI() {
+      try {
+        const res = await fetch('/.netlify/functions/runGEE');
+        const data = await res.json();
+        document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        document.getElementById('output').textContent = 'Error loading NDVI data.';
+      }
+    }
+  </script>
+</body>
+</html>
